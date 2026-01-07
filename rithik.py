@@ -282,7 +282,7 @@ class HyperTargetedBot:
         console.clear()
         console.print(Text(BANNER, style="bold cyan"))
         console.print("[bold yellow]License Key Verification[/bold yellow]")
-        license_key = console.input("[bold green]Enter License Key: [/]")
+        license_key = console.input("[bold green]Enter License Key: [/]").strip()
         
         # Verify Hash (SHA256) to protect key
         # Hash for 'rithik123456'
