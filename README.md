@@ -20,7 +20,12 @@ A powerful "Human Emulation" specialized Instagram automation tool designed for 
 
 ## 🚀 Installation (Termux)
 
-1.  **Clone the Repository**:
+1.  **Install System Dependencies**:
+    ```bash
+    pkg install python rust binutils -y
+    ```
+
+2.  **Clone the Repository**:
     ```bash
     git clone https://github.com/rithikclicks/Insta-Reach-Booster.git
     cd Insta-Reach-Booster
