@@ -1,0 +1,17 @@
+# Python Caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Sessions & Configs (Protect Sensitive Data)
+*.json
+*.session
+config.ini
+credentials.txt
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
