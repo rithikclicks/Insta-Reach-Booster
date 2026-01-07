@@ -22,8 +22,9 @@ A powerful "Human Emulation" specialized Instagram automation tool designed for 
 
 1.  **Install System Dependencies**:
     ```bash
-    pkg install python rust binutils -y
+    pkg install python rust binutils build-essential ninja -y
     ```
+    *Note: Installation may take 10-15 minutes on some devices due to building dependencies. Please be patient and do not close the app.*
 
 2.  **Clone the Repository**:
     ```bash
