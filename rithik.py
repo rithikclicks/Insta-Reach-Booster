@@ -76,7 +76,7 @@ BANNER = """
 ██║  ██║██║   ██║   ██║  ██║██║██║  ██╗
 ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝
   Hyper-Targeted Story Interaction Bot
-     [ Human Emulation Protocol ]
+     [ Human Emulation Protocol v1.2 ]
   [ Contact Developer RITHIK VINAYAK: +91 8075 717759 ]
 """
 
