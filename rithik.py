@@ -4,7 +4,13 @@ import time
 import random
 import datetime
 import hashlib
-import msvcrt
+import sys
+import select
+if sys.platform == 'win32':
+    import msvcrt
+else:
+    import tty
+    import termios
 from typing import List, Optional
 from rich.console import Console
 from rich.layout import Layout
@@ -58,6 +64,30 @@ BANNER = """
 """
 
 console = Console()
+
+class KeyboardHelper:
+    @staticmethod
+    def kbhit():
+        if sys.platform == 'win32':
+            return msvcrt.kbhit()
+        else:
+            dr, dw, de = select.select([sys.stdin], [], [], 0)
+            return dr != []
+
+    @staticmethod
+    def getch():
+        if sys.platform == 'win32':
+            return msvcrt.getch()
+        else:
+            fd = sys.stdin.fileno()
+            old_settings = termios.tcgetattr(fd)
+            try:
+                tty.setraw(sys.stdin.fileno())
+                ch = sys.stdin.read(1)
+            finally:
+                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+            return ch.encode('utf-8')
+
 
 class InstagramAPI(Client):
     """
@@ -343,8 +373,8 @@ class HyperTargetedBot:
 
                 while t.is_alive():
                     # Check for keypress
-                    if msvcrt.kbhit():
-                        key = msvcrt.getch()
+                    if KeyboardHelper.kbhit():
+                        key = KeyboardHelper.getch()
                         if key.lower() == b'p':
                             self.paused = not self.paused
                             status = "PAUSED" if self.paused else "RESUMED"
