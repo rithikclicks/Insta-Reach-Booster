@@ -33,7 +33,8 @@ try:
         TwoFactorRequired, 
         ChallengeRequired, 
         PleaseWaitFewMinutes,
-        LoginRequired
+        LoginRequired,
+        UserNotFound
     )
 except ImportError:
     # Fallback/Mock for development if API is missing in env
@@ -43,6 +44,7 @@ except ImportError:
     ChallengeRequired = ExceptionMock
     PleaseWaitFewMinutes = ExceptionMock
     LoginRequired = ExceptionMock
+    UserNotFound = ExceptionMock
 
     class Client:
         def login(self, u, p): pass
@@ -325,6 +327,8 @@ class HyperTargetedBot:
                     self.log("ERR", f"User processing error: {str(e)}", "red")
                     continue
 
+        except UserNotFound:
+            self.log("WARN", f"Target user '{target_user}' not found.", "yellow")
         except Exception as e:
             self.log("CRITICAL", f"Main loop error: {str(e)}", "bold red")
 
