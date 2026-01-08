@@ -4,6 +4,7 @@ import time
 import random
 import datetime
 import hashlib
+import msvcrt
 from typing import List, Optional
 from rich.console import Console
 from rich.layout import Layout
@@ -111,6 +112,7 @@ class HyperTargetedBot:
         }
         self.logs = []
         self.is_running = True
+        self.paused = False
     
     def log(self, type_str, message, color="white"):
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
@@ -212,6 +214,10 @@ class HyperTargetedBot:
                         time.sleep(60 * 10) # Check every 10 mins
                     self.log("WAKE", "Waking up from Deep Sleep!", "green")
 
+                # Pause Check
+                while self.paused:
+                    time.sleep(1)
+
                 # Process User
                 try:
                     user_info = self.fetch_api.get_user_info(liker.pk)
@@ -297,7 +303,6 @@ class HyperTargetedBot:
         
         username = console.input("[bold green]Enter Your Username: [/]")
         password = console.input("[bold green]Enter Your Password: [/]")
-        target = console.input("[bold green]Enter Target Username (Competitor): [/]")
         
         try:
             self.log("AUTH", "Attempting login...", "yellow")
@@ -323,29 +328,38 @@ class HyperTargetedBot:
         else:
             self.fetch_api = self.api
 
-        with Live(self.get_layout(), refresh_per_second=4, screen=True) as live:
-            self.is_running = True
-            
-            # Run the logic in a way that allows the Live display to update.
-            # Since scraping is blocking, we'd ideally use threading.
-            # For simplicity in this script, we'll just update the display manually or via the Live context 
-            # if we were loop-based. But run_filtration_logic is a heavy blocking loop.
-            # To fix this for Rich Live View, we need to inject the live update or use a thread.
-            
-            import threading
-            t = threading.Thread(target=self.run_filtration_logic, args=(target, target))
-            t.daemon = True
-            t.start()
+        while True:
+            target = console.input("[bold green]\nEnter Target Username (Competitor) or 'exit': [/]")
+            if target.lower() == 'exit':
+                break
 
-            while t.is_alive():
+            with Live(self.get_layout(), refresh_per_second=4, screen=True) as live:
+                self.is_running = True
+                
+                import threading
+                t = threading.Thread(target=self.run_filtration_logic, args=(target, target))
+                t.daemon = True
+                t.start()
+
+                while t.is_alive():
+                    # Check for keypress
+                    if msvcrt.kbhit():
+                        key = msvcrt.getch()
+                        if key.lower() == b'p':
+                            self.paused = not self.paused
+                            status = "PAUSED" if self.paused else "RESUMED"
+                            color = "bold red" if self.paused else "bold green"
+                            self.log("ocontrol", f"*** BOT {status} ***", color)
+
+                    live.update(self.get_layout())
+                    time.sleep(0.1)
+                
+                # Final update before closing Live View
                 live.update(self.get_layout())
-                time.sleep(0.25)
+                time.sleep(2) # Give user a moment to see the final state
             
-            # Final update
-            live.update(self.get_layout())
-            
-            # Keep open for a bit if finished
-            console.input("[bold]Process finished. Press Enter to exit...[/]")
+            # Live view is closed now, safe to ask for input
+            console.print("[bold cyan]Process finished for this target.[/bold cyan]")
 
 if __name__ == "__main__":
     bot = HyperTargetedBot()
