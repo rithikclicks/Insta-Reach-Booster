@@ -285,8 +285,8 @@ class HyperTargetedBot:
         license_key = console.input("[bold green]Enter License Key: [/]").strip()
         
         # Verify Hash (SHA256) to protect key
-        # Hash for 'RITHIK121'
-        valid_hash = "d8e8fca2dc0f896fd7cb4cb0031ba249f9df365313988b49e083204944d67319"
+        # Hash for 'rithik121'
+        valid_hash = "65473312ca0d7e6e86b6cbf7b88fe57b4f5da756692c6a0cfbd0faff69727628"
         
         if hashlib.sha256(license_key.encode()).hexdigest() != valid_hash:
              console.print("[bold red]Invalid License Key! Exiting...[/bold red]")
