@@ -28,10 +28,25 @@ sys.path.append(os.path.join(os.getcwd(), "RITHIK"))
 try:
     from instagrapi import Client
     from instagrapi.types import Story, UserShort
+    from instagrapi.exceptions import (
+        BadPassword, 
+        TwoFactorRequired, 
+        ChallengeRequired, 
+        PleaseWaitFewMinutes,
+        LoginRequired
+    )
 except ImportError:
     # Fallback/Mock for development if API is missing in env
+    class ExceptionMock(Exception): pass
+    BadPassword = ExceptionMock
+    TwoFactorRequired = ExceptionMock
+    ChallengeRequired = ExceptionMock
+    PleaseWaitFewMinutes = ExceptionMock
+    LoginRequired = ExceptionMock
+
     class Client:
         def login(self, u, p): pass
+        def two_factor_login(self, code): pass
         def user_id_from_username(self, u): return "12345"
         def user_medias(self, u, amount=1): return []
         def media_likers(self, m): return []
@@ -338,6 +353,25 @@ class HyperTargetedBot:
             self.log("AUTH", "Attempting login...", "yellow")
             self.api.login(username, password)
             self.log("AUTH", "Login successful!", "green")
+        except BadPassword:
+            console.print("[bold red]Login Failed: Invalid Password.[/]")
+            return
+        except TwoFactorRequired:
+            self.log("AUTH", "2FA Required!", "yellow")
+            while True:
+                code = console.input("[bold yellow]Enter 2FA Code (SMS/App): [/]").strip()
+                try:
+                    self.api.two_factor_login(code)
+                    self.log("AUTH", "2FA Login Successful!", "green")
+                    break
+                except BadPassword:
+                    console.print("[bold red]Invalid 2FA Code. Try again.[/]")
+                except Exception as e:
+                    console.print(f"[bold red]2FA Failed: {e}[/]")
+                    return
+        except ChallengeRequired:
+            console.print("[bold red]Login Failed: Challenge Required. Please login via Instagram App/Web to solve the challenge.[/]")
+            return
         except Exception as e:
             console.print(f"[bold red]Login Failed: {e}[/]")
             return
