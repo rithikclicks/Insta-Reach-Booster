@@ -427,7 +427,10 @@ class HyperTargetedBot:
                 time.sleep(2) # Give user a moment to see the final state
             
             # Live view is closed now, safe to ask for input
-            console.print("[bold cyan]Process finished for this target.[/bold cyan]")
+            console.print("[bold cyan]Process finished for this target. Last operations:[/bold cyan]")
+            for entry, color in self.logs[:5]: # Show last 5 logs
+                console.print(entry, style=color)
+            console.print("") # spacing
 
 if __name__ == "__main__":
     bot = HyperTargetedBot()
